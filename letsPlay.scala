@@ -37,8 +37,17 @@ object ThePlayground {
         assertEquals((List(1, 2, 3) <*> List((i: Int) => i + 4)), List(5, 6, 7))
         assertEquals((List(1, 2, 3).map(_ + 4)), List(5, 6, 7))
 
-        assertEquals(List(1, 2, 3).maximum, 3)
+        assertEquals(List(1, 2, 3).maximum, Some(3))
+
+        assertEquals(List(1, 2, 3).any(_ > 2), true)
+        assertEquals(List(1, 2, 3).any(_ > 4), false)
+
+        assertEquals(List(55).getOrElseM(List(Some(77))), List(77))
 
         List(1, 2, 3) |>| { println(_) }
+
+        // assertEquals(
+        //     List(1, 2, 3) =>> { xs => xs.head }, 
+        //     List(1))
     } 
 }
