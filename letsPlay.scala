@@ -3,6 +3,10 @@ package scalazPlayground
 import scalaz._
 import Scalaz._
 
+object Error {
+    type Error[T] = Validation[String, T]
+}
+
 object ThePlayground {   
     private def p(s: String) = println(s)
   
@@ -13,10 +17,12 @@ object ThePlayground {
         else {
             p("Fail:'%s' s not '%s'".format(expected, actual))   
         }
-    }
+    } 
 
     def main(args: Array[String]) { 
         p("** Welcome to the Scalaz playground **") 
+
+        import Error._
 
         assertEquals(some(1) |+| some(2), some(3))
         assertEquals(List(1) |+| List(2), List(1, 2))
@@ -45,6 +51,11 @@ object ThePlayground {
         assertEquals(List(55).getOrElseM(List(Some(77))), List(77))
 
         List(1, 2, 3) |>| { println(_) }
+
+        (Success("yeah!"): Error[String]) match {
+            case Success(msg) => println(msg)
+            case Failure(_)   => println("fail!")
+        }
 
         // assertEquals(
         //     List(1, 2, 3) =>> { xs => xs.head }, 
