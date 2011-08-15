@@ -73,5 +73,12 @@ object ThePlayground {
 
         assertEquals("a" ?? "b", "a")
         assertEquals((null: String) ?? "b", "b")
-    } 
+        assertEquals(1 min 2, 1)
+
+        assertEquals( 3 |> (_ + 4)
+                        |> (_ * 9)
+                        |> (_ * 10), 630)
+
+        assertEquals( 1 ?|? 2, LT)
+    }
 }
