@@ -15,7 +15,7 @@ object ThePlayground {
             p("Pass: '%s' equals '%s'".format(expected, actual))
         }
         else {
-            p("Fail:'%s' s not '%s'".format(expected, actual))   
+            p("Fail:'%s' is not '%s'".format(expected, actual))   
         }
     } 
 
@@ -50,7 +50,17 @@ object ThePlayground {
 
         assertEquals(List(55).getOrElseM(List(Some(77))), List(77))
 
-        List(1, 2, 3) |>| { println(_) }
+        List(1, 2, 3) |>| { println(_) } // => 1, 2, 3
+
+        (Failure("doh!"): Error[Int]) match {
+            case Success(i) =>   println(i + 5)
+            case Failure(msg) => println(msg)
+        }
+
+        (Success(12): Error[Int]) match {
+            case Success(i) =>   println(i + 5)
+            case Failure(msg) => println(msg)
+        }
 
         (Success("yeah!"): Error[String]) match {
             case Success(msg) => println(msg)
@@ -60,5 +70,8 @@ object ThePlayground {
         // assertEquals(
         //     List(1, 2, 3) =>> { xs => xs.head }, 
         //     List(1))
+
+        assertEquals("a" ?? "b", "a")
+        assertEquals((null: String) ?? "b", "b")
     } 
 }
