@@ -7,6 +7,11 @@ object Error {
     type Error[T] = Validation[String, T]
 }
 
+//class WriterMonad extends Monad[List] {
+//    def pure[String](s: => String) = List[String](s)
+//    def bind[A, B](a: List[A], f: String => List[B]) = f("hi mom")
+//}
+
 object ThePlayground {   
     private def p(s: String) = println(s)
   
@@ -80,5 +85,16 @@ object ThePlayground {
                         |> (_ * 10), 630)
 
         assertEquals( 1 ?|? 2, LT)
+
+        assertEquals(false ?? List(1, 2, 3), List())
+        assertEquals(false ?? Option(3), None)
+
+
+        val either: Either[String, Int] = Right(55)
+        assertEquals(either.flatMap(e => Right(59)), Right(59))
+
+        assertEquals(List(1, 2, 3) >| "Hello World", List("Hello World", 
+                                                          "Hello World", 
+                                                          "Hello World"))
     }
 }
