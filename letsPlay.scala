@@ -6,9 +6,13 @@ import Scalaz._
 case class Error(message: String, stackTrace: String)
 
 object Error {
-    implicit def ErrorableSemigroup: Semigroup[Error] = semigroup((e1, e2) =>
+    implicit def ErrorSemigroup: Semigroup[Error] = semigroup((e1, e2) =>
         Error(e1.message + ", " + e2.message, e1.stackTrace + ",\n\n" + e2.stackTrace)
     )
+
+    implicit def ErrorZero: Zero[Error] = zero(Error("", ""))
+
+    implicit def errorsToError(errors: Seq[Error]) = errors.asMA.sum
 }
 
 object ThePlayground {
@@ -106,5 +110,9 @@ object ThePlayground {
         assertEquals((3, "alex", List(4, 5)), (2, "al", List(4)) |+| (1, "ex", List(5)))
 
         assertEquals(Error("short, ribs", "stack,\n\noverflow"), Error("short", "stack") |+| Error("ribs", "overflow"))
+
+        def needsOneError(e: Error) = e
+
+        assertEquals(Error(", a, 1", "\n\nb\n\n2"), needsOneError(Seq(Error("a", "b"), Error("1", "2"))))
     }
 }
