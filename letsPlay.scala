@@ -12,20 +12,20 @@ object Error {
 //    def bind[A, B](a: List[A], f: String => List[B]) = f("hi mom")
 //}
 
-object ThePlayground {   
+object ThePlayground {
     private def p(s: String) = println(s)
-  
+
     private def assertEquals(expected: Any, actual: Any) = {
         if (expected == actual) {
             p("Pass: '%s' equals '%s'".format(expected, actual))
         }
         else {
-            p("Fail:'%s' is not '%s'".format(expected, actual))   
+            p("Fail: expect '%s' but got '%s'".format(expected, actual))
         }
-    } 
+    }
 
-    def main(args: Array[String]) { 
-        p("** Welcome to the Scalaz playground **") 
+    def main(args: Array[String]) {
+        p("** Welcome to the Scalaz playground **")
 
         import Error._
 
@@ -33,19 +33,20 @@ object ThePlayground {
         assertEquals(List(1) |+| List(2), List(1, 2))
 
         assertEquals(
-            List(1, 2, 3) >>= { i => 
-                if (i % 2 == 0) List(i) else Nil }, 
+            List(1, 2, 3) >>= { i =>
+                if (i % 2 == 0) List(i) else Nil },
             List(2))
 
         assertEquals(
             for (i <- List(1, 2, 3)
-                if (i % 2 == 0)) 
-            yield i, 
+                if (i % 2 == 0))
+            yield i,
             List(2))
 
-        assertEquals((List(1, 2, 3) |@| List(4)).apply { (a: Int, b: Int) => a + b }, List(5, 6, 7))
+        assertEquals((List(1, 2, 3) |@| List(4)).apply { _ + _ }, List(5, 6, 7))
 
-        assertEquals((List(1, 2, 3) <*> List((i: Int) => i + 4)), List(5, 6, 7))
+        assertEquals((List(1, 2, 3) <*> List((i: Int) => i + 4)),
+                                                             List(5, 6, 7))
         assertEquals((List(1, 2, 3).map(_ + 4)), List(5, 6, 7))
 
         assertEquals(List(1, 2, 3).maximum, Some(3))
@@ -73,7 +74,7 @@ object ThePlayground {
         }
 
         // assertEquals(
-        //     List(1, 2, 3) =>> { xs => xs.head }, 
+        //     List(1, 2, 3) =>> { xs => xs.head },
         //     List(1))
 
         assertEquals("a" ?? "b", "a")
@@ -93,8 +94,16 @@ object ThePlayground {
         val either: Either[String, Int] = Right(55)
         assertEquals(either.flatMap(e => Right(59)), Right(59))
 
-        assertEquals(List(1, 2, 3) >| "Hello World", List("Hello World", 
-                                                          "Hello World", 
+        assertEquals(List(1, 2, 3) >| "Hello World", List("Hello World",
+                                                          "Hello World",
                                                           "Hello World"))
+
+        assertEquals(Seq(some(1), some(2)).sequence, some(Seq(1, 2)))
+        assertEquals(some(Seq(1, 2)).sequence, Seq(some(1), some(2)))
+
+        assertEquals(Map("a" -> 1, "b" -> 4, "c" -> 3),
+                     Map("a" -> 1, "b" -> 2) |+| Map("b" -> 2, "c" -> 3))
+
+        assertEquals((3, "alex", List(4, 5)), (2, "al", List(4)) |+| (1, "ex", List(5)))
     }
 }
