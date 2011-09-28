@@ -3,14 +3,13 @@ package scalazPlayground
 import scalaz._
 import Scalaz._
 
-object Error {
-    type Error[T] = Validation[String, T]
-}
+case class Error(message: String, stackTrace: String)
 
-//class WriterMonad extends Monad[List] {
-//    def pure[String](s: => String) = List[String](s)
-//    def bind[A, B](a: List[A], f: String => List[B]) = f("hi mom")
-//}
+object Error {
+    implicit def ErrorableSemigroup: Semigroup[Error] = semigroup((e1, e2) =>
+        Error(e1.message + ", " + e2.message, e1.stackTrace + ",\n\n" + e2.stackTrace)
+    )
+}
 
 object ThePlayground {
     private def p(s: String) = println(s)
@@ -58,17 +57,17 @@ object ThePlayground {
 
         List(1, 2, 3) |>| { println(_) } // => 1, 2, 3
 
-        (Failure("doh!"): Error[Int]) match {
+        (Failure("doh!"): Validation[String, Int]) match {
             case Success(i) =>   println(i + 5)
             case Failure(msg) => println(msg)
         }
 
-        (Success(12): Error[Int]) match {
+        (Success(12): Validation[String, Int]) match {
             case Success(i) =>   println(i + 5)
             case Failure(msg) => println(msg)
         }
 
-        (Success("yeah!"): Error[String]) match {
+        (Success("yeah!"): Validation[String, String]) match {
             case Success(msg) => println(msg)
             case Failure(_)   => println("fail!")
         }
@@ -105,5 +104,7 @@ object ThePlayground {
                      Map("a" -> 1, "b" -> 2) |+| Map("b" -> 2, "c" -> 3))
 
         assertEquals((3, "alex", List(4, 5)), (2, "al", List(4)) |+| (1, "ex", List(5)))
+
+        assertEquals(Error("short, ribs", "stack,\n\noverflow"), Error("short", "stack") |+| Error("ribs", "overflow"))
     }
 }
